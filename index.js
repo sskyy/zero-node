@@ -4,23 +4,30 @@ var _  = require("lodash"),
 function extendListener( root, nodeName ){
   root.listen = root.listen || {}
   root.listen[nodeName+'.create.before'] = function generateBriefAndLogUser(val){
-    var root = this
+    var bus = this
     //1. TODO 摘要规则进一步优化
-    ZERO.mlog("node","begin to briefing for", nodeName)
-    if( val[root.config.field].length > root.config.limit + root.config.overflow ){
+    try{
+      ZERO.mlog("node","begin to briefing for", nodeName)
+      if( val[root.config.field].length > root.config.limit + root.config.overflow ){
 
-      val[root.config.toField] =
-        htmlToText.fromString(val[root.config.field]).slice(0,root.config.limit).replace(/[,.\uff0c\u3002_-]+$/g,"") + '...'
+        val[root.config.toField] =
+          htmlToText.fromString(val[root.config.field]).slice(0,root.config.limit).replace(/[,.\uff0c\u3002_-]+$/g,"") + '...'
 
-    }else{
-      ZERO.mlog("node", "too short, no need to brief", val[root.config.field].length)
-    }
+      }else{
+        ZERO.mlog("node", "too short, no need to brief", val[root.config.field].length)
+      }
+
+
 
     //2. 记录user
-    if( root.session('user') ){
-      val.user = _.pick(root.session('user'),['id'])
+    if( bus.session('user') ){
+      val.user = _.pick(bus.session('user'),['id'])
       //TODO expose uid to node for searching
-      val.uid = val.user?user.id:0
+      val.uid = val.user?val.user.id:0
+    }
+    }catch(e){
+      console.log("==============briefing err")
+      console.log(e)
     }
     return val
   }
