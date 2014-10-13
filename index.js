@@ -18,14 +18,16 @@ function extendListener( root, nodeName ){
 
     //2. 记录user
     if( root.session('user') ){
-      val[user] = _.pick(root.session('user'),['id'])
+      val.user = _.pick(root.session('user'),['id'])
+      //TODO expose uid to node for searching
+      val.uid = val.user?user.id:0
     }
     return val
   }
 }
 
-module.exports = {
-  deps : ['bus','config'],
+var nodeModule = {
+  deps : ['bus','config','request','model'],
   nodes : {},
   config : {
     auto : true,
@@ -35,27 +37,56 @@ module.exports = {
     overflow : 100,
     exclude : []
   },
+  route : {},
   expand : function( module ){
     var root = this
     if( module.models ){
       module.models.forEach(  function( model){
         if( model.isNode ){
           root.nodes[model.identity] = model
+          root.addRoute( root.route, model.identity)
         }
       })
     }
   },
-  bootstrap : function(){
+  addRoute : function( route, modelName ){
     var root = this
+    route['GET /'+modelName+"/count"] = {
+      "function": function (req, res, next) {
+        console.log( req.params)
+        var params = _.merge(req.params, req.query,req.body)
+        if( Object.keys(params).length ) {
+          //TODO not support advance count
+          console.log("=================go to next")
+          return next()
+        }
 
-    _.forEach(root.nodes, function( node, nodeName ){
-      if( root.config.auto === true && node.brief !== false){
-        extendListener( root, nodeName )
-      }else if( root.config.auto ===false && node.brief ===true){
-        extendListener( root, nodeName )
-      }
-    })
-    ZERO.mlog("NODE","after extend listener", root.listen)
-    root.dep.bus.expand(root)
+        root.dep.model.models[modelName].count().then(function (total) {
+          console.log("total",total)
+          res.status(200).json({count:total})
+        })
+      },
+      "order": {before: "rest.crud"}
+    }
+  },
+  bootstrap : {
+    "function": function() {
+      var root = nodeModule
+      _.forEach(root.nodes, function (node, nodeName) {
+        if (root.config.auto === true && node.brief !== false) {
+          extendListener(root, nodeName)
+        } else if (root.config.auto === false && node.brief === true) {
+          extendListener(root, nodeName)
+        }
+      })
+      root.dep.bus.expand(root)
+      root.dep.request.expand(root)
+      ZERO.mlog("NODE", "after extend listener", root.listen)
+      ZERO.mlog("NODE", "after extend listener", root.route)
+
+    },
+    "order": {before: "request.bootstrap"}
   }
 }
+
+module.exports = nodeModule
