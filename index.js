@@ -64,7 +64,6 @@ var nodeModule = {
         var params = _.merge(req.params, req.query,req.body)
         if( Object.keys(params).length ) {
           //TODO not support advance count
-          console.log("=================go to next")
           return next()
         }
 
