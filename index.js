@@ -26,8 +26,8 @@ function extendListener( root, nodeName ){
       val.uid = val.user?val.user.id:0
     }
     }catch(e){
-      console.log("==============briefing err")
-      console.log(e)
+      console.log("briefing err")
+      console.trace(e)
     }
     return val
   }
