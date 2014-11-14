@@ -12,11 +12,14 @@ function extendListener( root, nodeName ){
       if( val[root.config.field].length > root.config.limit + root.config.overflow ){
 
         if( val.type=='markdown'){
-          val[root.config.toField] = markdown.toHTML(val[root.config.toField] )
+          val[root.config.toField] =
+            htmlToText.fromString(markdown.toHTML(val[root.config.field] )).slice(0,root.config.limit).replace(/[,.\uff0c\u3002_-]+$/g,"") + '...'
+        }else{
+          val[root.config.toField] =
+            htmlToText.fromString(val[root.config.field]).slice(0,root.config.limit).replace(/[,.\uff0c\u3002_-]+$/g,"")
         }
 
-        val[root.config.toField] =
-          htmlToText.fromString(val[root.config.field]).slice(0,root.config.limit).replace(/[,.\uff0c\u3002_-]+$/g,"") + '...'
+
 
       }else{
         ZERO.mlog("node", "too short, no need to brief", val[root.config.field].length)
