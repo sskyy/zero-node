@@ -9,20 +9,17 @@ function extendListener( root, nodeName ){
     //1. TODO 摘要规则进一步优化
     try{
       ZERO.mlog("node","begin to briefing for", nodeName)
-      if( val[root.config.field].length > root.config.limit + root.config.overflow ){
 
-        if( val.type=='markdown'){
-          val[root.config.toField] =
-            htmlToText.fromString(markdown.toHTML(val[root.config.field] )).slice(0,root.config.limit).replace(/[,.\uff0c\u3002_-]+$/g,"") + '...'
-        }else{
-          val[root.config.toField] =
-            htmlToText.fromString(val[root.config.field]).slice(0,root.config.limit).replace(/[,.\uff0c\u3002_-]+$/g,"")
-        }
-
-
-
+      if( val.type=='markdown'){
+        val[root.config.toField] =
+          htmlToText.fromString(markdown.toHTML(val[root.config.field] ))
       }else{
-        ZERO.mlog("node", "too short, no need to brief", val[root.config.field].length)
+        val[root.config.toField] =
+          htmlToText.fromString(val[root.config.field])
+      }
+
+      if( val[root.config.toField].length > root.config.limit ){
+        val[root.config.toField] = val[root.config.toField].slice(0,root.config.limit).replace(/[,.\uff0c\u3002_-]+$/g,"") + '...'
       }
 
       //2. 记录user
