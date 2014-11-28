@@ -1,7 +1,10 @@
 {
   "name": "zero-node",
-  "version": "0.0.10",
-  "description": "zero module",
+  "version": "0.0.11",
+  "keywords": [
+    "zero module"
+  ],
+  "description": "This module helps you deal with models used in blog or other CMS easily.",
   "dependencies": {
     "markdown": "^0.5.0"
   },

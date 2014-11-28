@@ -1,6 +1,6 @@
 # zero-node #
 
-This module helps you deal with models used in blog or forum easily.
+This module helps you deal with models used in blog or other CMS easily.
 
 ## Usage ##
 
