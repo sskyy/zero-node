@@ -23,11 +23,11 @@ function extendListener( root, nodeName ){
       }
 
       //2. 记录user
-      if( bus.session.user ){
-        val.user = _.pick(bus.session.user,['id'])
-        //TODO expose uid to node for searching
-        val.uid = val.user?val.user.id:0
-      }
+      //if( bus.session.user ){
+      //  val.user = _.pick(bus.session.user,['id'])
+      //  TODO expose uid to node for searching
+        //val.uid = val.user?val.user.id:0
+      //}
     }catch(e){
       console.log("briefing err")
       console.trace(e)
